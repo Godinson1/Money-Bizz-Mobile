@@ -1,35 +1,96 @@
-import { Ionicons } from '@expo/vector-icons';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
-import * as React from 'react';
+import { Ionicons } from "@expo/vector-icons";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createStackNavigator } from "@react-navigation/stack";
+import * as React from "react";
+import { useSelector, RootStateOrAny } from "react-redux";
 
-import Colors from '../constants/Colors';
-import useColorScheme from '../hooks/useColorScheme';
-import TabOneScreen from '../screens/TabOneScreen';
-import TabTwoScreen from '../screens/TabTwoScreen';
-import { BottomTabParamList, TabOneParamList, TabTwoParamList } from '../types';
+import Colors from "../constants/Colors";
+import useColorScheme from "../hooks/useColorScheme";
+import HomeScreen from "../screens/HomeScreen";
+import SavingScreen from "../screens/SavingScreen";
+import InvestScreen from "../screens/InvestScreen";
+import Notification from "../screens/Notification";
+import AccountScreen from "../screens/AccountScreen";
+import {
+  BottomTabParamList,
+  TabOneParamList,
+  TabTwoParamList,
+  TabThreeParamList,
+  TabFourParamList,
+  TabFiveParamList,
+} from "../types";
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
 export default function BottomTabNavigator() {
   const colorScheme = useColorScheme();
+  const { user } = useSelector((state: RootStateOrAny) => state.user);
 
   return (
     <BottomTab.Navigator
-      initialRouteName="TabOne"
-      tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}>
+      initialRouteName="Home"
+      tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}
+    >
       <BottomTab.Screen
-        name="TabOne"
+        name="Home"
         component={TabOneNavigator}
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
         }}
       />
       <BottomTab.Screen
-        name="TabTwo"
+        name="Savings"
         component={TabTwoNavigator}
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="save" color={color} />,
+        }}
+      />
+
+      <BottomTab.Screen
+        name="Notification"
+        component={TabThreeNavigator}
+        options={{
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name="notifications" color={color} />
+          ),
+
+          tabBarBadge: `${
+            user &&
+            user.data &&
+            user.data.notifications &&
+            user.data.notifications.length === 0
+              ? ""
+              : user &&
+                user.data &&
+                user.data.notifications &&
+                user.data.notifications.length
+          }`,
+          tabBarBadgeStyle: {
+            backgroundColor: `${
+              user &&
+              user.data &&
+              user.data.notifications &&
+              user.data.notifications.length === 0
+                ? "white"
+                : "green"
+            }`,
+          },
+        }}
+      />
+
+      <BottomTab.Screen
+        name="Invest"
+        component={TabFourNavigator}
+        options={{
+          tabBarIcon: ({ color }) => <TabBarIcon name="rocket" color={color} />,
+        }}
+      />
+
+      <BottomTab.Screen
+        name="Account"
+        component={TabFiveNavigator}
+        options={{
+          tabBarIcon: ({ color }) => <TabBarIcon name="person" color={color} />,
         }}
       />
     </BottomTab.Navigator>
@@ -38,8 +99,11 @@ export default function BottomTabNavigator() {
 
 // You can explore the built-in icon families and icons on the web at:
 // https://icons.expo.fyi/
-function TabBarIcon(props: { name: React.ComponentProps<typeof Ionicons>['name']; color: string }) {
-  return <Ionicons size={30} style={{ marginBottom: -3 }} {...props} />;
+function TabBarIcon(props: {
+  name: React.ComponentProps<typeof Ionicons>["name"];
+  color: string;
+}) {
+  return <Ionicons size={25} style={{ marginBottom: -3 }} {...props} />;
 }
 
 // Each tab has its own navigation stack, you can read more about this pattern here:
@@ -50,9 +114,9 @@ function TabOneNavigator() {
   return (
     <TabOneStack.Navigator>
       <TabOneStack.Screen
-        name="TabOneScreen"
-        component={TabOneScreen}
-        options={{ headerTitle: 'Tab One Title' }}
+        name="HomeScreen"
+        component={HomeScreen}
+        options={{ headerShown: false, headerStyle: { elevation: 0 } }}
       />
     </TabOneStack.Navigator>
   );
@@ -64,10 +128,52 @@ function TabTwoNavigator() {
   return (
     <TabTwoStack.Navigator>
       <TabTwoStack.Screen
-        name="TabTwoScreen"
-        component={TabTwoScreen}
-        options={{ headerTitle: 'Tab Two Title' }}
+        name="SavingScreen"
+        component={SavingScreen}
+        options={{ headerShown: false }}
       />
     </TabTwoStack.Navigator>
+  );
+}
+
+const TabThreeStack = createStackNavigator<TabThreeParamList>();
+
+function TabThreeNavigator() {
+  return (
+    <TabThreeStack.Navigator>
+      <TabThreeStack.Screen
+        name="Notification"
+        component={Notification}
+        options={{ headerTitle: "Notification", headerStyle: { elevation: 0 } }}
+      />
+    </TabThreeStack.Navigator>
+  );
+}
+
+const TabFourStack = createStackNavigator<TabFourParamList>();
+
+function TabFourNavigator() {
+  return (
+    <TabFourStack.Navigator>
+      <TabFourStack.Screen
+        name="InvestScreen"
+        component={InvestScreen}
+        options={{ headerTitle: "InvestScreen" }}
+      />
+    </TabFourStack.Navigator>
+  );
+}
+
+const TabFiveStack = createStackNavigator<TabFiveParamList>();
+
+function TabFiveNavigator() {
+  return (
+    <TabFiveStack.Navigator>
+      <TabFiveStack.Screen
+        name="AccountScreen"
+        component={AccountScreen}
+        options={{ headerShown: false }}
+      />
+    </TabFiveStack.Navigator>
   );
 }
